@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TF Maasage</title>
+</head>
+<body>
+
+    <div class="container">
+        <form id="tg">
+            <div>
+                <label>name</label>
+                <input type="text" name="name">
+            </div>
+            <br>
+            <div>
+                <label>email</label>
+                <input type="email" name="email">
+            </div>
+            <br>
+            <div class="form-group">
+                <label for="formFile" class="">Выбирите файл</label>
+                <input type="file"  id="formFile" name="document">
+            </div>
+
+            <br>
+
+            <div id="success" class="" role="alert" style="display: none;">Сообщение отправлено</div>
+
+            <button type="submit">Отправить</button>
+
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <script>        
+        const TOKEN = '6691637069:AAFQKwVGDT5sjeOLIwgOm3WzVnX-0YLc5l0';
+        const CHAT_ID = '-1001891470089';
+        const URL_API = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+        const URL_API2 = `https://api.telegram.org/bot${TOKEN}/sendDocument`;
+        const success = document.getElementById('success');
+
+        document.getElementById('tg').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            
+            let message = `<b>Заявка с сайта!</b>\n`;
+            message += `<b>Отправитель:</b> ${this.name.value}\n`;
+            message += `<b>Почта:</b> ${this.email.value}\n`;
+
+            axios.post(URL_API, {
+                chat_id: CHAT_ID,
+                parse_mode: 'html',
+                text:message
+            })
+            .then((res) => {
+                this.name.value = '';
+                this.email.value = '';
+                success.innerHTML = 'Сообщение отправлено'
+                success.style.display = 'block'
+                
+            })
+            .catch((err) => {
+                console.warn(err)
+            })
+            .finally(() => {
+                console.log('Конец')
+            })
+
+
+            const formData = new FormData();
+            formData.append('chat_id', CHAT_ID)
+            formData.append('document', this.document.files[0])
+
+            axios.post(URL_API2, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then((res) => {  
+                success.innerHTML = 'Сообщение отправлено'
+                success.style.display = 'block'         
+            })
+            .catch((err) => {
+                console.warn(err)
+            })
+            .finally(() => {
+                console.log('Конец')
+            })
+            
+        })
+    </script>
+    
+    
+    
+    
+</body>
+</html>
